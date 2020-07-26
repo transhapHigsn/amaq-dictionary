@@ -4,6 +4,7 @@ import time
 from sys import exit
 from textblob import Word
 from rich import print as rich_print
+from rich.console import Console 
 
 from helper import clean_text
 from constants import FAQS, STOP_WORDS
@@ -11,6 +12,10 @@ from constants import FAQS, STOP_WORDS
 logging.basicConfig(filename='amaq.log', level=logging.DEBUG)
 
 class amaq(object):
+    def __init__(self, *args, **kwargs):
+        self.name = 'Amaq'
+        self.console = Console()
+
     def __str__(self):
         self.name = 'Amaq'
 
@@ -21,7 +26,7 @@ class amaq(object):
         rich_print("[bold blue]Let\'s get to the business.[\bold blue]")
 
         while True:
-            text = input('>>> ')
+            text = self.console.input('[red]>>>[/red] ')
             if text.strip() == '':
                 continue
 
@@ -63,7 +68,7 @@ class amaq(object):
                     Would you like me to correct?
                     Press Y for Yes and N for No.[/bold yellow]
                 ''')
-                choice = input('>>> ')
+                choice = self.console.input('[red]>>>[\red] ')
 
                 if choice.lower() not in ('y', 'n'):
                     rich_print('[yellow]Valid options are:[/yellow] [bold red]Y[/bold red] and [bold red]N[/bold red] only.')
