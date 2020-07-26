@@ -1,11 +1,13 @@
-import time
-from cleanText import cleanText
-import welcome as w
-from textblob import Word
-from sys import exit
 import logging
+import time
 
-logging.basicConfig(filename="amaq.log",level=logging.DEBUG)
+from sys import exit
+from textblob import Word
+
+from helper import clean_text
+import welcome as w
+
+logging.basicConfig(filename='amaq.log', level=logging.DEBUG)
 
 class amaq(object):
     def __str__(self):
@@ -16,16 +18,12 @@ class amaq(object):
         print("Hello, I\'m Amaq")
         print("Let\'s get to the business.")
         while True:
-            text = input('>>>')
+            text = input('>>> ')
             logging.info('User input: ' + text)
-            user_in = Word(cleanText(text))
-
+            user_in = Word(clean_text(text))
 
             if user_in in w.STOP_WORDS:
-                print('Bye Bye!')
-                logging.info('Terminating script at ' +
-                 time.asctime(time.localtime(time.time())))
-                exit()
+                self.quit()
 
             if w.FAQS.get(user_in):
                 logging.info('User asked about question')
@@ -34,30 +32,31 @@ class amaq(object):
 
             meanings = self.meaning_check(user_in)
             logging.info('Writing the result onto the output screen for ' + meanings[0])
-            print('{} stands for :'.format(meanings[0].capitalize()))
+            print(f'{meanings[0].capitalize()} stands for : \n')
             temp = meanings[0]
             del(meanings[0])
-            if meanings:
-                for meaning in meanings:
-                    print('*** ' + meaning)
+            
+            for meaning in meanings:
+                print(f'*** {meaning}')
 
             else:
                 print('Sorry, I didn\'t found any match.')
                 logging.info('Amaq failed to find any match for ' + temp)
 
     def meaning_check(self,text):
-        #spell checking  and output of text
-
+        # spell checking  and output of text
         text = Word(text)
 
         if text.correct() != text:
-            print('''Are you certain this is the right word?
-                    If not, I have a correction for you.
-                    Would you like me to correct?
-                    Press Y for Yes and N for No.''')
-            choice = input('>>>')
+            print('''
+                Are you certain this is the right word?
+                If not, I have a correction for you.
+                Would you like me to correct?
+                Press Y for Yes and N for No.
+            ''')
+            choice = input('>>> ')
 
-            if choice.lower()=='y':
+            if choice.lower() == 'y':
                 text = text.correct()
 
         res = [ text ]
@@ -65,6 +64,12 @@ class amaq(object):
             res.extend(text.definitions)
 
         return res
+
+    def quit(self):
+        print('Bye Bye!')
+        logging.info(f'Terminating script at {time.asctime(time.localtime(time.time()))}')
+        exit()
+
 
 if __name__=='__main__':
     a = amaq()
