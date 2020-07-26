@@ -3,6 +3,7 @@ import time
 
 from sys import exit
 from textblob import Word
+from rich import print as rich_print
 
 from helper import clean_text
 import welcome as w
@@ -35,29 +36,37 @@ class amaq(object):
             print(f'{meanings[0].capitalize()} stands for : \n')
             temp = meanings[0]
             del(meanings[0])
+
+            if not meanings:
+                print('Sorry, I didn\'t found any match.')
+                logging.info('Amaq failed to find any match for ' + temp)
+                continue
             
             for meaning in meanings:
                 print(f'*** {meaning}')
-
-            else:
-                print('Sorry, I didn\'t found any match.')
-                logging.info('Amaq failed to find any match for ' + temp)
 
     def meaning_check(self,text):
         # spell checking  and output of text
         text = Word(text)
 
         if text.correct() != text:
-            print('''
-                Are you certain this is the right word?
-                If not, I have a correction for you.
-                Would you like me to correct?
-                Press Y for Yes and N for No.
-            ''')
-            choice = input('>>> ')
+            while True:
+                rich_print('''
+                    [bold yellow]Are you certain this is the right word?
+                    If not, I have a correction for you.
+                    Would you like me to correct?
+                    Press Y for Yes and N for No.[/bold yellow]
+                ''')
+                choice = input('>>> ')
 
-            if choice.lower() == 'y':
-                text = text.correct()
+                if choice.lower() not in ('y', 'n'):
+                    rich_print('[yellow]Valid options are:[/yellow] [bold red]Y[/bold red] and [bold red]N[/bold red] only.')
+                    continue
+
+                if choice.lower() == 'y':
+                    text = text.correct()
+
+                break
 
         res = [ text ]
         if text.definitions:
