@@ -6,7 +6,7 @@ from textblob import Word
 from rich import print as rich_print
 
 from helper import clean_text
-import welcome as w
+from constants import FAQS, STOP_WORDS
 
 logging.basicConfig(filename='amaq.log', level=logging.DEBUG)
 
@@ -16,34 +16,40 @@ class amaq(object):
 
     def amaq_queries(self):
         logging.info('Running Amaq ' + time.asctime(time.localtime(time.time())))
-        print("Hello, I\'m Amaq")
-        print("Let\'s get to the business.")
+
+        rich_print("[bold blue]Hello, I\'m Amaq[/bold blue]")
+        rich_print("[bold blue]Let\'s get to the business.[\bold blue]")
+
         while True:
             text = input('>>> ')
+            if text.strip() == '':
+                continue
+
             logging.info('User input: ' + text)
             user_in = Word(clean_text(text))
 
-            if user_in in w.STOP_WORDS:
+            if user_in in STOP_WORDS:
                 self.quit()
 
-            if w.FAQS.get(user_in):
+            if FAQS.get(user_in):
                 logging.info('User asked about question')
-                print (w.FAQS.get(user_in))
+                rich_print(FAQS.get(user_in))
                 continue
 
             meanings = self.meaning_check(user_in)
-            logging.info('Writing the result onto the output screen for ' + meanings[0])
-            rich_print(f'{meanings[0].capitalize()} stands for : \n')
-            temp = meanings[0]
+
+            req = meanings[0]
+            logging.info(f'Writing the result onto the output screen for {req}')
             del(meanings[0])
 
             if not meanings:
                 rich_print('[yellow]Sorry, I didn\'t found any match.[/yellow]')
-                logging.info('Amaq failed to find any match for ' + temp)
+                logging.info(f'Amaq failed to find any match for {req}')
                 continue
             
+            rich_print(f'[blue]{req.capitalize()}[/blue] stands for : \n')
             for meaning in meanings:
-                rich_print(f'[italic green]*** {meaning}[/italic green]')
+                rich_print(f'[green]*** {meaning}[/green]')
 
     def meaning_check(self,text):
         # spell checking  and output of text
@@ -75,7 +81,7 @@ class amaq(object):
         return res
 
     def quit(self):
-        print('Bye Bye!')
+        rich_print('[bold blue]Bye Bye![/bold blue]')
         logging.info(f'Terminating script at {time.asctime(time.localtime(time.time()))}')
         exit()
 
