@@ -33,17 +33,17 @@ class amaq(object):
 
             meanings = self.meaning_check(user_in)
             logging.info('Writing the result onto the output screen for ' + meanings[0])
-            print(f'{meanings[0].capitalize()} stands for : \n')
+            rich_print(f'{meanings[0].capitalize()} stands for : \n')
             temp = meanings[0]
             del(meanings[0])
 
             if not meanings:
-                print('Sorry, I didn\'t found any match.')
+                rich_print('[yellow]Sorry, I didn\'t found any match.[/yellow]')
                 logging.info('Amaq failed to find any match for ' + temp)
                 continue
             
             for meaning in meanings:
-                print(f'*** {meaning}')
+                rich_print(f'[italic green]*** {meaning}[/italic green]')
 
     def meaning_check(self,text):
         # spell checking  and output of text
