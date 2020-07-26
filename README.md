@@ -16,4 +16,5 @@ It is still under development.
 
 ### Run
 
+- `export NLTK_DATA=$(pwd)/.venv/lib`
 - `python amaq.py`
